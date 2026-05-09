@@ -10,15 +10,17 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
+
     --ink: #004853;
     --ink2: #008cbb;
     --ink3: #3c7183d9;
     --parchment: #c2f4ff;
     --parchment2: #f5e6c6;
+
     --parchment3: #81e2ff;
-    --gold: #0087bc;
+    --gold: #005f81;
     --gold2: #006196;
-    --gold3: #489dfe;
+    --gold3: rgb(2, 68, 143);
     --red: #007c81;
     --red2: #006e99;
     --teal: #1a5f5f;
@@ -284,7 +286,7 @@
   }
   .quiz-date-badge {
     display: inline-block;
-    background: var(--ink);
+    background: var(--parchment2);
     color: var(--gold3);
     font-family: 'Playfair Display', serif;
     font-size: 0.85rem;
@@ -303,7 +305,7 @@
   }
   .quiz-hint {
     font-size: 0.85rem;
-    color: var(--ink3);
+    color: var(--ink);
     margin-bottom: 1rem;
   }
   .quiz-input-row {
@@ -599,6 +601,7 @@
     <button class="nav-btn active" onclick="showPanel('oggi')">Oggi nella Storia</button>
     <button class="nav-btn" onclick="showPanel('cerca')">Ricerca Data</button>
     <button class="nav-btn" onclick="showPanel('quiz')">Quiz Storico</button>
+    <button class="nav-btn" onclick="showPanel('profilo')">Profilo</button>
   </nav>
 
   <!-- OGGI -->
@@ -680,7 +683,49 @@
       </div>
     </div>
   </section>
+<!-- PROFILO -->
+<section class="panel" id="panel-profilo">
+  <div class="section-header">
+    <h2>Profilo Giocatore</h2>
+    <span class="date-label" id="profilo-name-label">—</span>
+  </div>
 
+  <div class="search-form" style="flex-direction:column; align-items:stretch;">
+    <div class="form-group">
+      <label>Nome giocatore</label>
+      <input type="text" id="input-nome" maxlength="40"
+             style="font-family:'Crimson Pro',serif; font-size:1rem; padding:0.4rem 0.65rem;
+                    border:1px solid var(--parchment3); background:var(--parchment);
+                    color:var(--ink); border-radius:2px; outline:none;">
+    </div>
+    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+      <button class="search-btn" onclick="salvaNome()">Salva nome</button>
+      <button class="new-quiz-btn" onclick="esportaDati()">↓ Esporta JSON</button>
+      <button class="new-quiz-btn" onclick="document.getElementById('import-file').click()">↑ Importa JSON</button>
+      <button class="new-quiz-btn" onclick="resetDati()" style="border-color:var(--red); color:var(--red);">Reset</button>
+      <input type="file" id="import-file" accept="application/json" style="display:none" onchange="importaDati(event)">
+    </div>
+  </div>
+
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-val" id="prof-partite">0</span>
+      <span class="stat-lbl">Partite giocate</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="prof-totale">0</span>
+      <span class="stat-lbl">Punti totali</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="prof-media">—</span>
+      <span class="stat-lbl">Media</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-val" id="prof-best">—</span>
+      <span class="stat-lbl">Miglior risultato</span>
+    </div>
+  </div>
+</section>
   <div class="footer-ornament">— ✦ ✦ ✦ —</div>
 </div>
 
@@ -1978,6 +2023,143 @@ function cercaData() {
 
 // ── QUIZ ──
 let quizState = { event: null, answered: false };
+// ── PLAYER DATA STORAGE ──
+const STORAGE_KEY = 'almanacco_player_v1';
+
+let playerData = {
+  nome: 'Anonimo',
+  partite: 0,
+  totale: 0,
+  best: 0,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString()
+};
+
+function caricaDati() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      playerData = { ...playerData, ...parsed };
+    }
+  } catch (e) {
+    console.warn('Dati corrotti, ripristino default', e);
+  }
+  syncStatsFromPlayer();
+  aggiornaProfilo();
+}
+
+function salvaDati() {
+  playerData.updatedAt = new Date().toISOString();
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(playerData));
+  } catch (e) {
+    toast('Errore salvataggio: spazio esaurito');
+  }
+}
+
+function syncStatsFromPlayer() {
+  quizStats.partite = playerData.partite;
+  quizStats.totale = playerData.totale;
+  quizStats.best = playerData.best;
+  document.getElementById('stat-partite').textContent = quizStats.partite;
+  document.getElementById('stat-score-tot').textContent = quizStats.totale.toLocaleString('it-IT');
+  document.getElementById('stat-media').textContent =
+    quizStats.partite ? Math.round(quizStats.totale / quizStats.partite) : '—';
+  document.getElementById('stat-best').textContent = quizStats.best || '—';
+}
+
+function aggiornaProfilo() {
+  document.getElementById('profilo-name-label').textContent = playerData.nome;
+  const inp = document.getElementById('input-nome');
+  if (inp) inp.value = playerData.nome;
+  document.getElementById('prof-partite').textContent = playerData.partite;
+  document.getElementById('prof-totale').textContent = playerData.totale.toLocaleString('it-IT');
+  document.getElementById('prof-media').textContent =
+    playerData.partite ? Math.round(playerData.totale / playerData.partite) : '—';
+  document.getElementById('prof-best').textContent = playerData.best || '—';
+}
+
+function salvaNome() {
+  const v = document.getElementById('input-nome').value.trim();
+  if (!v) { toast('Il nome non può essere vuoto'); return; }
+  playerData.nome = v;
+  salvaDati();
+  aggiornaProfilo();
+  toast('Nome salvato');
+}
+
+function esportaDati() {
+  const blob = new Blob([JSON.stringify(playerData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `almanacco_${playerData.nome.replace(/\s+/g,'_')}_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  toast('Dati esportati');
+}
+
+function importaDati(ev) {
+  const file = ev.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (typeof data.partite !== 'number' || typeof data.totale !== 'number') {
+        toast('File non valido'); return;
+      }
+      playerData = {
+        nome: data.nome || 'Anonimo',
+        partite: data.partite || 0,
+        totale: data.totale || 0,
+        best: data.best || 0,
+        createdAt: data.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      salvaDati();
+      syncStatsFromPlayer();
+      aggiornaProfilo();
+      toast('Dati importati');
+    } catch (err) {
+      toast('Errore lettura file');
+    }
+  };
+  reader.readAsText(file);
+  ev.target.value = '';
+}
+
+function resetDati() {
+  if (!confirm('Sei sicuro di voler azzerare tutti i dati?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  playerData = {
+    nome: 'Anonimo', partite: 0, totale: 0, best: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  syncStatsFromPlayer();
+  aggiornaProfilo();
+  toast('Dati azzerati');
+}
+
+// minimal toast
+function toast(msg) {
+  let t = document.getElementById('__toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = '__toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--parchment);padding:0.6rem 1.2rem;border-radius:2px;font-family:Playfair Display,serif;font-size:0.9rem;z-index:999;opacity:0;transition:opacity 0.3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.style.opacity = '0', 2200);
+}
+
 let quizStats = { partite: 0, totale: 0, best: 0 };
 
 function newQuiz() {
@@ -2050,6 +2232,11 @@ function submitQuiz() {
   document.getElementById('stat-score-tot').textContent = quizStats.totale.toLocaleString('it-IT');
   document.getElementById('stat-media').textContent = Math.round(quizStats.totale / quizStats.partite);
   document.getElementById('stat-best').textContent = quizStats.best;
+  playerData.partite = quizStats.partite;
+  playerData.totale = quizStats.totale;
+  playerData.best = quizStats.best;
+  salvaDati();
+  aggiornaProfilo();
 }
 
 // ── PANEL SWITCHING ──
