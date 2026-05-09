@@ -1,1 +1,1 @@
-Nothing needs to be added to .gitignore since the changes only include source/config files (index.html, vercel.json) and no build artifacts, dependencies, or temporary files.
+Nothing should be ignored in this case, as only HTML files were modified and no build artifacts, dependencies, or temporary files were detected.
