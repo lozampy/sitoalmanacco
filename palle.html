@@ -14,7 +14,7 @@
     --ink2: #008cbb;
     --ink3: #3c7183d9;
     --parchment: #c2f4ff;
-    --parchment2: #004853;
+    --parchment2: #f5e6c6;
     --parchment3: #81e2ff;
     --gold: #0087bc;
     --gold2: #006196;
@@ -36,19 +36,12 @@
     overflow-x: hidden;
   }
 
-  /* Paper texture via CSS */
+  /* Paper texture via CSS - removed lines for modal compatibility */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image:
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 27px,
-        rgba(90,60,20,0.06) 27px,
-        rgba(90,60,20,0.06) 28px
-      );
+    background-image: none;
     pointer-events: none;
     z-index: 0;
   }
@@ -468,7 +461,10 @@
     opacity: 1;
   }
   .modal-content {
-    background: var(--parchment);
+    background: var(--parchment2);
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/91/Parchment.jpg');
+    background-size: cover;
+    background-position: center;
     max-width: 700px;
     width: 100%;
     max-height: 85vh;
@@ -488,7 +484,7 @@
     align-items: center;
     padding: 1.25rem 1.5rem;
     border-bottom: 2px solid var(--parchment3);
-    background: var(--ink);
+    background: rgba(0, 72, 83, 0.95);
     color: var(--parchment);
   }
   .modal-title {
@@ -515,10 +511,12 @@
   .modal-close:hover { color: var(--gold3); }
   .modal-body {
     padding: 1.5rem;
+    background: rgba(245, 230, 198, 0.92);
+    backdrop-filter: blur(2px);
   }
   .modal-year-badge {
     display: inline-block;
-    background: var(--gold);
+    background: rgba(0, 135, 188, 0.9);
     color: var(--parchment);
     font-family: 'Playfair Display', serif;
     font-size: 0.9rem;
