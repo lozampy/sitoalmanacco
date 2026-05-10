@@ -2358,8 +2358,10 @@ function newQuiz() {
 
 function calcolaPunteggio(scarto) {
   if (scarto === 0) return 5000;
-  if (scarto >= 500) return 1;
-  return 5000 - Math.round((scarto / 500) * 4999);
+  // 10 anni di scarto = 1000 punti persi, quindi 100 punti per anno
+  // Con 50 anni di scarto si arriva a 0 punti
+  if (scarto >= 50) return 0;
+  return 5000 - (scarto * 100);
 }
 
 function submitQuiz() {
