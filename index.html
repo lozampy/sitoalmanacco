@@ -445,9 +445,185 @@
     opacity: 0.45;
   }
 
+  /* ── MOBILE RESPONSIVENESS ── */
+  @media (max-width: 768px) {
+    .wrapper {
+      padding: 0 1rem 3rem;
+    }
+    
+    .masthead {
+      padding: 2rem 0.5rem 1rem;
+    }
+    
+    .nav {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .nav-btn {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+      border-bottom-width: 2px;
+    }
+    
+    .search-form {
+      flex-direction: column;
+      align-items: stretch;
+      padding: 1rem;
+    }
+    
+    .form-group {
+      width: 100%;
+    }
+    
+    .form-group select, 
+    .form-group input[type=number] {
+      width: 100%;
+    }
+    
+    .search-btn {
+      width: 100%;
+      padding: 0.7rem 1.4rem;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .event-card {
+      grid-template-columns: 80px 1fr;
+      gap: 0.5rem;
+      padding: 1rem 0;
+    }
+    
+    .event-year {
+      font-size: 1.2rem;
+    }
+    
+    .event-desc {
+      font-size: 1rem;
+    }
+    
+    .quiz-input-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    
+    .quiz-input {
+      width: 100%;
+      font-size: 1.2rem;
+    }
+    
+    .submit-btn, .new-quiz-btn {
+      width: 100%;
+    }
+    
+    .stats-strip {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .modal-content {
+      max-height: 90vh;
+      margin: 0.5rem;
+    }
+    
+    .modal-header {
+      padding: 1rem;
+    }
+    
+    .modal-body {
+      padding: 1rem;
+    }
+  }
+  
   @media (max-width: 500px) {
-    .event-card { grid-template-columns: 70px 1fr; }
-    .quiz-card { padding: 1.25rem 1rem; }
+    .masthead-vol {
+      font-size: 9px;
+    }
+    
+    .masthead-title {
+      font-size: clamp(1.8rem, 8vw, 2.5rem);
+    }
+    
+    .masthead-subtitle {
+      font-size: clamp(0.8rem, 3vw, 1rem);
+    }
+    
+    .date-bar {
+      flex-direction: column;
+      text-align: center;
+      padding: 0.5rem 1rem;
+    }
+    
+    .nav-btn {
+      flex: 1 1 45%;
+      text-align: center;
+      padding: 0.5rem 0.5rem;
+      font-size: 0.8rem;
+    }
+    
+    .event-card {
+      grid-template-columns: 60px 1fr;
+      gap: 0.3rem;
+    }
+    
+    .event-year {
+      font-size: 1rem;
+    }
+    
+    .event-year .era {
+      font-size: 0.55rem;
+    }
+    
+    .event-desc {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+    
+    .quiz-card {
+      padding: 1rem 0.75rem;
+    }
+    
+    .quiz-question {
+      font-size: 1.1rem;
+    }
+    
+    .stat-val {
+      font-size: 1.3rem;
+    }
+    
+    .stat-lbl {
+      font-size: 0.65rem;
+    }
+    
+    .modal-title {
+      font-size: 1.2rem;
+    }
+    
+    .modal-close {
+      font-size: 1.5rem;
+      width: 28px;
+      height: 28px;
+    }
+  }
+  
+  /* Touch-friendly improvements */
+  @media (hover: none) and (pointer: coarse) {
+    .nav-btn, 
+    .search-btn, 
+    .submit-btn, 
+    .new-quiz-btn,
+    .event-card.clickable {
+      min-height: 44px;
+    }
+    
+    .form-group select, 
+    .form-group input[type=number],
+    .quiz-input {
+      min-height: 44px;
+    }
   }
 
   /* ── MODAL DEEP DIVE ── */
